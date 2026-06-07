@@ -1,21 +1,15 @@
-import type { Metadata } from "next";
+import { SandboxClient } from "./SandboxClient";
 
-export const metadata: Metadata = { title: "Sandbox" };
-
-interface Props {
+export default async function SandboxPage({
+  params,
+}: {
   params: Promise<{ id: string }>;
-}
-
-export default async function SandboxPage({ params }: Props) {
-  const { id } = await params;
+}) {
+  const resolvedParams = await params;
+  
   return (
-    <div className="p-8 text-white">
-      <h1 className="text-2xl font-bold mb-2">Sandbox</h1>
-      <p className="text-zinc-400 text-sm">
-        Project ID: <code className="text-indigo-400">{id}</code>
-        <br />
-        Sandbox canvas — built in Step 3
-      </p>
+    <div className="h-full">
+      <SandboxClient projectId={resolvedParams.id} />
     </div>
   );
 }
