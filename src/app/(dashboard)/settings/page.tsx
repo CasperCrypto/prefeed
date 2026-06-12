@@ -1,39 +1,63 @@
 import { signout } from "@/app/actions/auth";
+import { createClient } from "@/lib/supabase/server";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-2xl font-bold text-white mb-2">Settings</h1>
-      <p className="text-zinc-400 mb-8">Manage your account preferences.</p>
+    <div className="mx-auto w-full max-w-3xl px-5 py-10 md:px-8 md:py-14">
+      <div className="mb-10">
+        <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">
+          Account
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">
+          Settings
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-neutral-500">
+          Manage the basics for your PreFeed workspace.
+        </p>
+      </div>
 
-      <div className="bg-[#111113] border border-white/5 rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-white/5">
-          <h2 className="text-lg font-medium text-white mb-1">Profile</h2>
-          <p className="text-sm text-zinc-500">Your personal account details.</p>
-          
+      <section className="overflow-hidden rounded-xl border border-neutral-200 bg-white card-soft">
+        <div className="border-b border-neutral-200 p-6">
+          <h2 className="text-lg font-semibold text-neutral-900">Profile</h2>
+          <p className="mt-1 text-sm text-neutral-400">
+            Your personal account details.
+          </p>
+
           <div className="mt-6">
-            <label className="block text-sm font-medium text-zinc-400 mb-1.5">Email</label>
-            <input 
-              type="email" 
-              disabled 
-              className="w-full px-3 py-2 bg-zinc-900/50 border border-white/5 rounded-lg text-zinc-500 cursor-not-allowed"
-              value="user@example.com"
+            <label className="mb-2 block text-sm font-medium text-neutral-700">
+              Email
+            </label>
+            <input
+              type="email"
+              disabled
+              className="h-11 w-full cursor-not-allowed rounded-lg border border-neutral-200 bg-neutral-50 px-3.5 text-sm text-neutral-500"
+              value={user?.email ?? ""}
+              readOnly
             />
-            <p className="text-xs text-zinc-600 mt-2">Email changes are not supported in the MVP.</p>
+            <p className="mt-2 text-xs text-neutral-400">
+              Email changes are not supported in the MVP.
+            </p>
           </div>
         </div>
 
-        <div className="p-6 bg-red-500/5">
-          <h2 className="text-lg font-medium text-red-400 mb-1">Danger Zone</h2>
-          <p className="text-sm text-red-400/70 mb-4">Actions here are permanent.</p>
-          
-          <form action={signout}>
-            <button className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-medium px-4 py-2 rounded-lg transition-colors">
-              Sign Out
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-neutral-900">Session</h2>
+          <p className="mt-1 text-sm text-neutral-400">
+            End the current authenticated session.
+          </p>
+
+          <form action={signout} className="mt-5">
+            <button className="h-10 rounded-full border border-neutral-300 px-5 text-sm font-semibold text-neutral-700 hover:bg-neutral-900 hover:border-neutral-900 hover:text-white">
+              Sign out
             </button>
           </form>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

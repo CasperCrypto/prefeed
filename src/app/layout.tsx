@@ -3,11 +3,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "PreFeed — Social Media Preview & Approval",
+    default: "PreFeed - Social Media Preview & Approval",
     template: "%s | PreFeed",
   },
   description:
-    "Pixel-perfect social media previews. Share review links with clients. Collect feedback. Approve posts — without per-seat fees.",
+    "Pixel-perfect social media previews. Share review links with clients. Collect feedback. Approve posts without per-seat fees.",
   keywords: [
     "social media approval",
     "content review",
@@ -21,14 +21,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "PreFeed",
-    title: "PreFeed — Social Media Preview & Approval",
+    title: "PreFeed - Social Media Preview & Approval",
     description:
       "Share pixel-perfect social media previews with clients. No per-seat fees.",
   },
   twitter: {
     card: "summary_large_image",
     title: "PreFeed",
-    description: "Social media preview & approval without the per-seat chaos.",
+    description: "Social media preview and approval without per-seat chaos.",
   },
   robots: {
     index: true,
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#09090b",
+  themeColor: "#050505",
 };
 
 export default function RootLayout({

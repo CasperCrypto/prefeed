@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from "lucide-react";
+import Image from "next/image";
 import { formatRelative } from "@/lib/utils";
 
 interface InstagramCardProps {
@@ -19,18 +20,25 @@ export function InstagramCard({
   createdAt = new Date().toISOString()
 }: InstagramCardProps) {
   return (
-    <div className="w-full max-w-sm mx-auto bg-black text-white border border-zinc-800 rounded-xl overflow-hidden shadow-2xl flex flex-col font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+    <div className="w-full max-w-sm mx-auto bg-black text-white border border-zinc-800 rounded-lg overflow-hidden shadow-2xl flex flex-col font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
       {/* Header */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 flex items-center justify-center">
             {authorAvatar ? (
-              <img src={authorAvatar} alt={authorName} className="w-full h-full object-cover" />
+              <Image
+                src={authorAvatar}
+                alt={authorName}
+                width={32}
+                height={32}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="font-bold text-xs text-zinc-500 uppercase">{authorName.charAt(0)}</span>
             )}
           </div>
-          <span className="font-semibold text-sm tracking-tight">{authorName}</span>
+          <span className="font-semibold text-sm">{authorName}</span>
         </div>
         <button className="text-white">
           <MoreHorizontal size={20} />
@@ -40,7 +48,14 @@ export function InstagramCard({
       {/* Media Viewport (1:1 Aspect Ratio usually) */}
       <div className="w-full aspect-square bg-zinc-900 border-y border-zinc-800 flex items-center justify-center overflow-hidden">
         {mediaUrls.length > 0 ? (
-          <img src={mediaUrls[0]} alt="Post media" className="w-full h-full object-cover" />
+          <Image
+            src={mediaUrls[0]}
+            alt="Post media"
+            width={640}
+            height={640}
+            unoptimized
+            className="w-full h-full object-cover"
+          />
         ) : (
           <div className="text-zinc-600 text-sm">Add media for preview</div>
         )}

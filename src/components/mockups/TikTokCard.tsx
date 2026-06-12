@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, MessageCircle, Bookmark, Share, Music, Plus } from "lucide-react";
+import Image from "next/image";
 
 interface TikTokCardProps {
   contentText: string;
@@ -19,10 +20,17 @@ export function TikTokCard({
   // We'll mimic this with a fixed height container.
   
   return (
-    <div className="relative w-full max-w-[320px] mx-auto h-[568px] bg-black text-white rounded-2xl overflow-hidden shadow-2xl font-[ProximaNova,sans-serif]">
+    <div className="relative w-full max-w-[320px] mx-auto h-[568px] bg-black text-white rounded-lg overflow-hidden shadow-2xl font-[ProximaNova,sans-serif]">
       {/* Video Background */}
       {mediaUrls.length > 0 ? (
-        <img src={mediaUrls[0]} alt="Post media" className="absolute inset-0 w-full h-full object-cover" />
+        <Image
+          src={mediaUrls[0]}
+          alt="Post media"
+          width={720}
+          height={1280}
+          unoptimized
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       ) : (
         <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center">
           <span className="text-zinc-600 font-medium">Add 9:16 media</span>
@@ -38,7 +46,14 @@ export function TikTokCard({
         <div className="relative">
           <div className="w-12 h-12 rounded-full border-[1.5px] border-white overflow-hidden bg-zinc-800 flex items-center justify-center">
             {authorAvatar ? (
-              <img src={authorAvatar} alt={authorHandle} className="w-full h-full object-cover" />
+              <Image
+                src={authorAvatar}
+                alt={authorHandle}
+                width={48}
+                height={48}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="font-bold text-zinc-500 uppercase">{authorHandle.charAt(0)}</span>
             )}

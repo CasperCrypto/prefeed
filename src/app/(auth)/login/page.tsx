@@ -5,82 +5,90 @@ import { login } from "@/app/actions/auth";
 import Link from "next/link";
 import { Zap } from "lucide-react";
 
+type AuthActionState = {
+  success?: boolean;
+  error?: string;
+} | null;
+
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(
-    async (prevState: any, formData: FormData) => {
+    async (_prevState: AuthActionState, formData: FormData) => {
       return await login(formData);
     },
     null
   );
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-[#09090b] px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <Zap size={16} className="text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              PreFeed
+    <main className="light relative flex min-h-dvh items-center justify-center overflow-hidden bg-neutral-50 px-4 py-12 text-neutral-900">
+      <div className="absolute inset-0 dot-grid opacity-[0.5]" />
+      <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-white to-transparent" />
+
+      <div className="relative w-full max-w-sm">
+        <div className="mb-10 text-center">
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-900 text-white">
+              <Zap size={16} />
+            </span>
+            <span className="font-mono text-base font-semibold tracking-tight">
+              prefeed
             </span>
           </Link>
-          <p className="text-sm text-zinc-500">Sign in to your workspace</p>
+          <p className="mt-5 text-sm text-neutral-500">
+            Sign in to your workspace.
+          </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-[#111113] border border-white/8 rounded-2xl p-7">
-          <form action={formAction} className="space-y-4">
+        <div className="rounded-xl border border-neutral-200 bg-white p-7 card-soft">
+          <form action={formAction} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-1.5">
+              <label className="mb-2 block text-sm font-medium text-neutral-700">
                 Email
               </label>
               <input
-                type="email"
                 name="email"
-                required
-                className="w-full px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
                 placeholder="you@agency.com"
+                required
+                type="email"
+                className="h-11 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white focus:outline-none"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-1.5">
+              <label className="mb-2 block text-sm font-medium text-neutral-700">
                 Password
               </label>
               <input
-                type="password"
                 name="password"
+                placeholder="********"
                 required
-                className="w-full px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
-                placeholder="••••••••"
+                type="password"
+                className="h-11 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white focus:outline-none"
               />
             </div>
 
             {state?.error && (
-              <p className="text-sm text-red-400">{state.error}</p>
+              <p className="rounded-lg border border-red-100 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+                {state.error}
+              </p>
             )}
 
             <button
               type="submit"
               disabled={pending}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition-colors"
+              className="h-11 w-full rounded-full bg-neutral-900 text-sm font-semibold text-white hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {pending ? "Signing in..." : "Sign in"}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-sm text-zinc-500 mt-5">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="text-indigo-400 hover:text-indigo-300 transition-colors"
-          >
-            Sign up free
+        <p className="mt-6 text-center text-sm text-neutral-500">
+          Need a workspace?{" "}
+          <Link href="/signup" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+            Sign up
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }

@@ -4,10 +4,15 @@ import { useActionState, useState } from "react";
 import { createProject } from "@/app/actions/projects";
 import { Plus, X } from "lucide-react";
 
+type ProjectActionState = {
+  success?: boolean;
+  error?: string;
+} | null;
+
 export function CreateProjectModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, pending] = useActionState(
-    async (prevState: any, formData: FormData) => {
+    async (_prevState: ProjectActionState, formData: FormData) => {
       const result = await createProject(formData);
       if (result.success) {
         setIsOpen(false);
@@ -21,56 +26,66 @@ export function CreateProjectModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white hover:bg-neutral-700"
       >
         <Plus size={16} />
-        New Project
+        New project
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#111113] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden animate-fade-in shadow-2xl">
-            <div className="flex items-center justify-between p-5 border-b border-white/5">
-              <h2 className="text-lg font-bold text-white">Create Project</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl animate-fade-in">
+            <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-5">
+              <div>
+                <h2 className="text-lg font-semibold text-neutral-900">
+                  Create project
+                </h2>
+                <p className="mt-1 text-sm text-neutral-400">
+                  Add a client, brand, or campaign workspace.
+                </p>
+              </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-zinc-500 hover:text-white transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900"
+                type="button"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
-            <form action={formAction} className="p-5 space-y-4">
+            <form action={formAction} className="space-y-5 p-6">
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1.5">
-                  Project Name
+                <label className="mb-2 block text-sm font-medium text-neutral-700">
+                  Project name
                 </label>
                 <input
-                  type="text"
-                  name="name"
-                  required
                   autoFocus
-                  className="w-full px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
-                  placeholder="e.g. Acme Corp"
+                  name="name"
+                  placeholder="Acme launch"
+                  required
+                  type="text"
+                  className="h-11 w-full rounded-lg border border-neutral-200 bg-neutral-50 px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white focus:outline-none"
                 />
               </div>
 
               {state?.error && (
-                <p className="text-sm text-red-400">{state.error}</p>
+                <p className="rounded-lg border border-red-100 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+                  {state.error}
+                </p>
               )}
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+              <div className="flex justify-end gap-2 border-t border-neutral-100 pt-5">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+                  className="h-10 rounded-lg px-4 text-sm font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={pending}
-                  className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+                  className="h-10 rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {pending ? "Creating..." : "Create"}
                 </button>

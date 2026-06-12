@@ -1,6 +1,7 @@
 "use client";
 
 import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Globe } from "lucide-react";
+import Image from "next/image";
 import { formatRelative } from "@/lib/utils";
 
 interface FacebookCardProps {
@@ -19,13 +20,20 @@ export function FacebookCard({
   createdAt = new Date().toISOString()
 }: FacebookCardProps) {
   return (
-    <div className="w-full max-w-[500px] mx-auto bg-[#242526] text-[#e4e6eb] rounded-xl overflow-hidden shadow-2xl font-[Segoe_UI,Helvetica,Arial,sans-serif]">
+    <div className="w-full max-w-[500px] mx-auto bg-[#242526] text-[#e4e6eb] rounded-lg overflow-hidden shadow-2xl font-[Segoe_UI,Helvetica,Arial,sans-serif]">
       {/* Header */}
       <div className="p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden flex items-center justify-center">
             {authorAvatar ? (
-              <img src={authorAvatar} alt={authorName} className="w-full h-full object-cover" />
+              <Image
+                src={authorAvatar}
+                alt={authorName}
+                width={40}
+                height={40}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="font-bold text-sm text-zinc-500 uppercase">{authorName.charAt(0)}</span>
             )}
@@ -36,7 +44,7 @@ export function FacebookCard({
             </h4>
             <div className="flex items-center gap-1 text-[13px] text-[#b0b3b8]">
               <span className="hover:underline cursor-pointer">{formatRelative(createdAt)}</span>
-              <span>·</span>
+              <span>-</span>
               <Globe size={12} className="fill-current" />
             </div>
           </div>
@@ -54,7 +62,14 @@ export function FacebookCard({
       {/* Full-bleed Media */}
       {mediaUrls.length > 0 && (
         <div className="w-full bg-black aspect-video flex items-center justify-center overflow-hidden border-y border-white/5">
-          <img src={mediaUrls[0]} alt="Post media" className="w-full h-full object-cover" />
+          <Image
+            src={mediaUrls[0]}
+            alt="Post media"
+            width={720}
+            height={405}
+            unoptimized
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
 

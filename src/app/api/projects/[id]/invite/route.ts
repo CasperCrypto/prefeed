@@ -62,7 +62,8 @@ export async function POST(
       );
     }
 
-    const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/review/${token.token}`;
+    const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
+    const reviewUrl = `${origin}/review/${token.token}`;
 
     return NextResponse.json(
       { token, review_url: reviewUrl },

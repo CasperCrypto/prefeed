@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState } from "react";
+import Link from "next/link";
+import { createPost } from "@/app/actions/posts";
+import { FacebookCard } from "@/components/mockups/FacebookCard";
+import { InstagramCard } from "@/components/mockups/InstagramCard";
+import { TikTokCard } from "@/components/mockups/TikTokCard";
+import { XCard } from "@/components/mockups/XCard";
 import { PlatformSidebar } from "@/components/sandbox/PlatformSidebar";
 import { PostEditor } from "@/components/sandbox/PostEditor";
-import { XCard } from "@/components/mockups/XCard";
-import { InstagramCard } from "@/components/mockups/InstagramCard";
-import { FacebookCard } from "@/components/mockups/FacebookCard";
-import { TikTokCard } from "@/components/mockups/TikTokCard";
+import { ShareReviewModal } from "@/components/sandbox/ShareReviewModal";
 import type { Platform } from "@/types/database";
-import { createPost } from "@/app/actions/posts";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, CheckCircle2, Eye, PenLine } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SandboxClientProps {
   projectId: string;
@@ -22,9 +24,12 @@ export function SandboxClient({ projectId }: SandboxClientProps) {
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
 
   const handleSave = async () => {
     setIsSaving(true);
+    setSaveError(null);
     const result = await createPost({
       projectId,
       platform,
@@ -36,41 +41,85 @@ export function SandboxClient({ projectId }: SandboxClientProps) {
     if (result.data) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
-      // Reset form or keep it to create another variant
     } else {
-      alert(result.error || "Failed to save post");
+      setSaveError(result.error || "Failed to save post");
     }
   };
 
+  const mockup = (
+    <>
+      {platform === "x" && (
+        <XCard contentText={contentText} mediaUrls={mediaUrls} />
+      )}
+      {platform === "instagram" && (
+        <InstagramCard contentText={contentText} mediaUrls={mediaUrls} />
+      )}
+      {platform === "facebook" && (
+        <FacebookCard contentText={contentText} mediaUrls={mediaUrls} />
+      )}
+      {platform === "tiktok" && (
+        <TikTokCard contentText={contentText} mediaUrls={mediaUrls} />
+      )}
+    </>
+  );
+
   return (
-    <div className="flex flex-col h-[calc(100dvh-64px)] md:h-full bg-black overflow-hidden relative">
-      {/* Top Bar */}
-      <div className="h-14 border-b border-white/5 bg-[#09090b] flex items-center justify-between px-4 shrink-0">
-        <Link 
-          href="/projects" 
-          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium"
+    <div className="relative flex h-[calc(100dvh-64px)] flex-col overflow-hidden bg-neutral-50 md:h-dvh">
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-4">
+        <Link
+          href="/projects"
+          className="flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-neutral-900"
         >
           <ArrowLeft size={16} />
-          Back to Projects
+          Projects
         </Link>
+
+        {/* Mobile edit/preview toggle */}
+        <div className="flex rounded-full border border-neutral-200 bg-neutral-100 p-0.5 md:hidden">
+          {(["edit", "preview"] as const).map((view) => (
+            <button
+              key={view}
+              type="button"
+              onClick={() => setMobileView(view)}
+              className={cn(
+                "flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold capitalize",
+                mobileView === view
+                  ? "bg-white text-neutral-900 shadow-sm"
+                  : "text-neutral-500"
+              )}
+            >
+              {view === "edit" ? <PenLine size={13} /> : <Eye size={13} />}
+              {view}
+            </button>
+          ))}
+        </div>
+
         <div className="flex items-center gap-3">
           {showSuccess && (
-            <span className="flex items-center gap-1.5 text-emerald-400 text-sm font-medium animate-fade-in">
+            <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 animate-fade-in">
               <CheckCircle2 size={16} />
-              Saved to drafts
+              Saved
             </span>
           )}
-          <span className="text-xs bg-zinc-800 text-zinc-300 px-2 py-1 rounded font-medium">Sandbox Mode</span>
+          {saveError && (
+            <span className="max-w-[200px] truncate text-sm font-medium text-red-600 animate-fade-in">
+              {saveError}
+            </span>
+          )}
+          <ShareReviewModal projectId={projectId} />
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Platform Switcher */}
         <PlatformSidebar activePlatform={platform} onChange={setPlatform} />
 
-        {/* Middle: Editor */}
-        <div className="w-full md:w-[400px] lg:w-[450px] border-r border-white/5 shrink-0 flex flex-col bg-[#09090b]">
-          <PostEditor 
+        <div
+          className={cn(
+            "w-full shrink-0 flex-col border-r border-neutral-200 bg-white md:flex md:w-[400px] lg:w-[440px]",
+            mobileView === "edit" ? "flex" : "hidden"
+          )}
+        >
+          <PostEditor
             contentText={contentText}
             setContentText={setContentText}
             mediaUrls={mediaUrls}
@@ -80,34 +129,22 @@ export function SandboxClient({ projectId }: SandboxClientProps) {
           />
         </div>
 
-        {/* Right: Live Preview */}
-        <div className="flex-1 bg-[#09090b] relative overflow-hidden flex flex-col hidden md:flex">
-          {/* Subtle grid background */}
-          <div 
-            className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-            style={{ backgroundImage: 'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
-          />
-          
-          <div className="p-4 border-b border-white/5 bg-[#111113]/80 backdrop-blur-md flex justify-between items-center z-10 shrink-0">
-            <h2 className="text-sm font-semibold text-white">Live Preview</h2>
-            <span className="text-xs text-zinc-500">Updates instantly as you type</span>
+        <div
+          className={cn(
+            "relative flex-1 flex-col overflow-hidden bg-neutral-50 md:flex",
+            mobileView === "preview" ? "flex" : "hidden"
+          )}
+        >
+          <div className="absolute inset-0 fine-grid opacity-[0.7]" />
+          <div className="relative z-10 flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 bg-white/70 px-5 backdrop-blur">
+            <h2 className="text-sm font-semibold text-neutral-900">Live preview</h2>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-neutral-400">
+              Updates as you type
+            </span>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 flex items-center justify-center relative">
-            <div className="w-full max-w-2xl transform scale-[0.95] xl:scale-100 transition-transform origin-center flex justify-center">
-              {platform === "x" && (
-                <XCard contentText={contentText} mediaUrls={mediaUrls} />
-              )}
-              {platform === "instagram" && (
-                <InstagramCard contentText={contentText} mediaUrls={mediaUrls} />
-              )}
-              {platform === "facebook" && (
-                <FacebookCard contentText={contentText} mediaUrls={mediaUrls} />
-              )}
-              {platform === "tiktok" && (
-                <TikTokCard contentText={contentText} mediaUrls={mediaUrls} />
-              )}
-            </div>
+          <div className="relative flex flex-1 items-center justify-center overflow-y-auto p-6 lg:p-10">
+            <div className="flex w-full max-w-2xl justify-center">{mockup}</div>
           </div>
         </div>
       </div>

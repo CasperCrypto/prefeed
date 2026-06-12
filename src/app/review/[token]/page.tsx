@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next";
 import { validateClientToken } from "@/lib/tokens";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
+import { ReviewClient } from "./ReviewClient";
+import type { Comment, Post, Project } from "@/types/database";
 
 export const metadata: Metadata = {
-  title: "Review",
+  title: "Review · PreFeed",
   description: "Review and approve social media posts",
 };
 
@@ -20,28 +24,42 @@ export default async function ReviewPage({ params }: Props) {
     notFound();
   }
 
-  return (
-    <div className="min-h-dvh bg-[#09090b] text-white">
-      {/* Header */}
-      <div className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600" />
-          <span className="font-semibold text-sm">PreFeed Review</span>
-        </div>
-        <span className="text-xs text-zinc-500 bg-zinc-800 rounded-full px-3 py-1">
-          Reviewing as {tokenRecord.email}
-        </span>
-      </div>
+  const supabase = createAdminClient();
 
-      {/* Content */}
-      <div className="p-8 text-center">
-        <p className="text-zinc-400 text-sm">
-          Project: <code className="text-indigo-400">{tokenRecord.project_id}</code>
-          <br />
-          <br />
-          Full Reviewer UI — built in Step 3
-        </p>
-      </div>
-    </div>
+  const [{ data: project }, { data: posts }] = await Promise.all([
+    (supabase as any)
+      .from("projects")
+      .select("id, name")
+      .eq("id", tokenRecord.project_id)
+      .single() as Promise<{ data: Pick<Project, "id" | "name"> | null }>,
+    (supabase as any)
+      .from("posts")
+      .select("*")
+      .eq("project_id", tokenRecord.project_id)
+      .order("created_at", { ascending: false }) as Promise<{ data: Post[] | null }>,
+  ]);
+
+  const postIds = (posts ?? []).map((p) => p.id);
+
+  let comments: Comment[] = [];
+  if (postIds.length > 0) {
+    const { data } = (await (supabase as any)
+      .from("comments")
+      .select("*")
+      .in("post_id", postIds)
+      .order("created_at", { ascending: true })) as { data: Comment[] | null };
+    comments = data ?? [];
+  }
+
+  return (
+    <ReviewClient
+      token={token}
+      reviewerEmail={tokenRecord.email}
+      reviewerName={tokenRecord.client_name}
+      projectId={tokenRecord.project_id}
+      projectName={project?.name ?? "Review"}
+      initialPosts={posts ?? []}
+      initialComments={comments}
+    />
   );
 }

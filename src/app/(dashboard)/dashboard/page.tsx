@@ -1,86 +1,146 @@
 import { getProjects } from "@/app/actions/projects";
-import { FolderKanban, Activity, CheckCircle2 } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  CheckCircle2,
+  FolderKanban,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
+
+const stats = [
+  {
+    label: "Total projects",
+    value: (count: number) => count,
+    icon: FolderKanban,
+  },
+  {
+    label: "Pending review",
+    value: () => 0,
+    icon: Activity,
+  },
+  {
+    label: "Approved posts",
+    value: () => 0,
+    icon: CheckCircle2,
+  },
+];
 
 export default async function DashboardPage() {
   const projects = await getProjects();
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
-        <p className="text-zinc-400">Here's what's happening across your projects.</p>
+    <div className="mx-auto w-full max-w-6xl px-5 py-10 md:px-8 md:py-14">
+      <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-neutral-400">
+            Workspace overview
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">
+            Welcome back
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-500">
+            Review activity, project state, and the latest client work in one
+            quiet view.
+          </p>
+        </div>
+        <Link
+          href="/projects"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white hover:bg-neutral-700"
+        >
+          <Plus size={16} />
+          New project
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-[#111113] border border-white/5 rounded-2xl p-5">
-          <div className="flex items-center gap-3 text-zinc-400 mb-2">
-            <FolderKanban size={18} className="text-indigo-400" />
-            <h3 className="font-medium">Total Projects</h3>
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-neutral-200 bg-white p-6 card-soft"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-neutral-500">{stat.label}</p>
+              <stat.icon size={16} className="text-neutral-400" />
+            </div>
+            <div className="mt-8 text-4xl font-semibold tracking-tight text-neutral-900">
+              {stat.value(projects.length)}
+            </div>
           </div>
-          <p className="text-3xl font-bold text-white">{projects.length}</p>
-        </div>
-        <div className="bg-[#111113] border border-white/5 rounded-2xl p-5">
-          <div className="flex items-center gap-3 text-zinc-400 mb-2">
-            <Activity size={18} className="text-amber-400" />
-            <h3 className="font-medium">Pending Review</h3>
-          </div>
-          <p className="text-3xl font-bold text-white">0</p>
-        </div>
-        <div className="bg-[#111113] border border-white/5 rounded-2xl p-5">
-          <div className="flex items-center gap-3 text-zinc-400 mb-2">
-            <CheckCircle2 size={18} className="text-emerald-400" />
-            <h3 className="font-medium">Approved Posts</h3>
-          </div>
-          <p className="text-3xl font-bold text-white">0</p>
-        </div>
+        ))}
       </div>
 
-      <div className="bg-[#111113] border border-white/5 rounded-2xl p-6">
-        <h2 className="text-lg font-bold text-white mb-4">Recent Projects</h2>
-        {projects.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-zinc-500 mb-4">No projects yet. Create your first project to get started.</p>
+      <section className="overflow-hidden rounded-xl border border-neutral-200 bg-white card-soft">
+        <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-5">
+          <div>
+            <h2 className="text-base font-semibold text-neutral-900">Recent projects</h2>
+            <p className="mt-1 text-sm text-neutral-400">
+              The last workspaces created in PreFeed.
+            </p>
+          </div>
+          {projects.length > 0 && (
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+              className="hidden text-sm font-medium text-neutral-500 hover:text-neutral-900 md:inline-flex"
             >
-              <FolderKanban size={16} />
-              Go to Projects
+              View all
             </Link>
+          )}
+        </div>
+
+        {projects.length === 0 ? (
+          <div className="flex min-h-[320px] items-center justify-center p-6 text-center">
+            <div className="max-w-sm">
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+                <FolderKanban size={22} className="text-neutral-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-neutral-900">
+                No projects yet
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-500">
+                Create the first workspace for a brand, client, or campaign.
+              </p>
+              <Link
+                href="/projects"
+                className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white hover:bg-neutral-700"
+              >
+                Go to projects
+                <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="space-y-3">
-            {projects.slice(0, 5).map((p) => (
+          <div className="divide-y divide-neutral-100">
+            {projects.slice(0, 5).map((project) => (
               <Link
-                key={p.id}
-                href={`/projects/${p.id}/sandbox`}
-                className="flex items-center justify-between p-4 bg-[#18181b] border border-white/5 rounded-xl hover:border-white/10 transition-colors"
+                key={project.id}
+                href={`/projects/${project.id}/sandbox`}
+                className="group flex items-center justify-between gap-4 px-6 py-4 hover:bg-neutral-50"
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${p.brand_color}20` }}
-                  >
-                    <span
-                      className="font-bold"
-                      style={{ color: p.brand_color }}
-                    >
-                      {p.name.charAt(0).toUpperCase()}
+                <div className="flex min-w-0 items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50">
+                    <span className="font-mono text-sm font-semibold uppercase text-neutral-700">
+                      {project.name.charAt(0)}
                     </span>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-white">{p.name}</h3>
-                    <p className="text-xs text-zinc-500">
-                      Created {new Date(p.created_at).toLocaleDateString()}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-neutral-900">
+                      {project.name}
+                    </p>
+                    <p className="mt-1 text-xs text-neutral-400">
+                      Created {new Date(project.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
+                <ArrowRight
+                  size={16}
+                  className="shrink-0 text-neutral-300 group-hover:translate-x-0.5 group-hover:text-neutral-900"
+                />
               </Link>
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

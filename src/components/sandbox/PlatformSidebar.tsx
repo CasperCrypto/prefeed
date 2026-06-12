@@ -1,6 +1,6 @@
 "use client";
 
-import { PLATFORM_LABELS, PLATFORM_COLORS } from "@/lib/utils";
+import { PLATFORM_LABELS } from "@/lib/utils";
 import type { Platform } from "@/types/database";
 import { cn } from "@/lib/utils";
 
@@ -9,39 +9,36 @@ interface PlatformSidebarProps {
   onChange: (platform: Platform) => void;
 }
 
-export function PlatformSidebar({ activePlatform, onChange }: PlatformSidebarProps) {
-  const platforms: Platform[] = ["x", "instagram", "facebook", "tiktok"];
+const platforms: Platform[] = ["x", "instagram", "facebook", "tiktok"];
 
+export function PlatformSidebar({
+  activePlatform,
+  onChange,
+}: PlatformSidebarProps) {
   return (
-    <div className="w-16 md:w-20 border-r border-white/5 bg-[#111113] flex flex-col items-center py-6 gap-4 shrink-0 overflow-y-auto">
-      {platforms.map((p) => {
-        const isActive = activePlatform === p;
+    <div className="flex w-16 shrink-0 flex-col items-center gap-2 overflow-y-auto border-r border-neutral-200 bg-white px-2 py-4 md:w-24">
+      {platforms.map((platform) => {
+        const isActive = activePlatform === platform;
+
         return (
           <button
-            key={p}
-            onClick={() => onChange(p)}
+            key={platform}
+            onClick={() => onChange(platform)}
             className={cn(
-              "relative w-12 h-12 flex items-center justify-center rounded-xl transition-all",
-              isActive 
-                ? "bg-white/10 shadow-lg scale-105" 
-                : "hover:bg-white/5 text-zinc-500 hover:text-zinc-300"
+              "group flex h-14 w-full flex-col items-center justify-center gap-1 rounded-lg border text-neutral-400 hover:border-neutral-200 hover:bg-neutral-50 hover:text-neutral-700",
+              isActive
+                ? "border-neutral-900 bg-neutral-900 text-white hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                : "border-transparent"
             )}
-            title={PLATFORM_LABELS[p]}
+            title={PLATFORM_LABELS[platform]}
+            type="button"
           >
-            {/* Very simple icon representation using the first letter for MVP, real icons can be added later */}
-            <div 
-              className="font-bold text-xl uppercase" 
-              style={{ color: isActive ? PLATFORM_COLORS[p] : "inherit" }}
-            >
-              {p.charAt(0)}
-            </div>
-            
-            {isActive && (
-              <div 
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-md"
-                style={{ backgroundColor: PLATFORM_COLORS[p] }}
-              />
-            )}
+            <span className="font-mono text-base font-semibold uppercase">
+              {platform.charAt(0)}
+            </span>
+            <span className="hidden max-w-full truncate px-1 text-[10px] font-medium md:block">
+              {PLATFORM_LABELS[platform].replace(" (Twitter)", "")}
+            </span>
           </button>
         );
       })}

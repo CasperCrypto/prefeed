@@ -44,10 +44,10 @@ export const PLATFORM_LABELS: Record<string, string> = {
 
 /** Platform colors */
 export const PLATFORM_COLORS: Record<string, string> = {
-  x: "#000000",
-  facebook: "#1877F2",
-  instagram: "#E1306C",
-  tiktok: "#010101",
+  x: "#f5f5f5",
+  facebook: "#f5f5f5",
+  instagram: "#f5f5f5",
+  tiktok: "#f5f5f5",
 };
 
 /** Status badge colors */
@@ -61,27 +61,26 @@ export const STATUS_COLORS: Record<
     dot: "bg-zinc-500",
   },
   pending: {
-    bg: "bg-amber-500/10",
-    text: "text-amber-400",
-    dot: "bg-amber-400",
+    bg: "bg-zinc-800/50",
+    text: "text-zinc-300",
+    dot: "bg-zinc-400",
   },
   approved: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-400",
-    dot: "bg-emerald-400",
+    bg: "bg-white/10",
+    text: "text-white",
+    dot: "bg-white",
   },
 };
 
 /** Generate a review URL from token */
 export function getReviewUrl(token: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   return `${base}/review/${token}`;
 }
 
 /** Truncate text to N chars */
 export function truncate(str: string, n: number): string {
-  return str.length > n ? str.slice(0, n - 1) + "…" : str;
+  return str.length > n ? str.slice(0, n - 1) + "..." : str;
 }
 
 /** Copy text to clipboard */

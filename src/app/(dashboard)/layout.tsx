@@ -1,7 +1,19 @@
 import Link from "next/link";
 import { signout } from "@/app/actions/auth";
 import { createClient } from "@/lib/supabase/server";
-import { Zap, LayoutDashboard, FolderKanban, Settings, LogOut } from "lucide-react";
+import {
+  FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Zap,
+} from "lucide-react";
+
+const navItems = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Projects", href: "/projects", icon: FolderKanban },
+  { label: "Settings", href: "/settings", icon: Settings },
+];
 
 export default async function DashboardLayout({
   children,
@@ -9,60 +21,52 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const navItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Projects", href: "/projects", icon: FolderKanban },
-    { label: "Settings", href: "/settings", icon: Settings },
-  ];
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-dvh bg-[#09090b] flex">
-      {/* Sidebar */}
-      <aside className="hidden md:flex w-60 flex-col border-r border-white/5 bg-[#111113]">
-        <div className="p-5 border-b border-white/5">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-              <Zap size={14} className="text-white" />
-            </div>
-            <span className="font-bold text-white text-sm tracking-tight">
-              PreFeed
+    <div className="light min-h-dvh bg-neutral-50 text-neutral-900 md:flex">
+      <aside className="hidden w-[248px] shrink-0 flex-col border-r border-neutral-200 bg-white md:flex">
+        <div className="flex h-16 items-center border-b border-neutral-200 px-5">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-neutral-900 text-white">
+              <Zap size={15} />
             </span>
+            <span className="font-mono text-sm font-semibold tracking-tight">prefeed</span>
           </Link>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
+
+        <nav className="flex-1 space-y-1 p-3">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="group flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
             >
-              <item.icon size={16} />
+              <item.icon size={16} className="text-neutral-400 group-hover:text-neutral-700" />
               {item.label}
             </Link>
           ))}
         </nav>
-        
-        {/* User Footer */}
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                <span className="text-xs text-zinc-400 font-medium">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="truncate">
-                <p className="text-sm font-medium text-white truncate">
-                  {user?.email}
-                </p>
-              </div>
+
+        <div className="border-t border-neutral-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-100">
+              <span className="font-mono text-xs font-semibold uppercase text-neutral-600">
+                {user?.email?.charAt(0) ?? "U"}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-neutral-800">
+                {user?.email ?? "Workspace"}
+              </p>
+              <p className="mt-0.5 text-xs text-neutral-400">Active session</p>
             </div>
             <form action={signout}>
               <button
                 type="submit"
-                className="p-1.5 text-zinc-500 hover:text-red-400 rounded-md transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900"
                 title="Sign out"
               >
                 <LogOut size={16} />
@@ -72,8 +76,33 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-auto">{children}</main>
+      <div className="flex min-h-dvh flex-1 flex-col">
+        <header className="flex h-16 items-center justify-between border-b border-neutral-200 bg-white/90 px-4 backdrop-blur md:hidden">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-neutral-900 text-white">
+              <Zap size={15} />
+            </span>
+            <span className="font-mono text-sm font-semibold tracking-tight">prefeed</span>
+          </Link>
+          <div className="flex items-center gap-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                title={item.label}
+              >
+                <item.icon size={16} />
+              </Link>
+            ))}
+          </div>
+        </header>
+
+        <main className="relative flex-1 overflow-auto">
+          <div className="pointer-events-none absolute inset-0 fine-grid opacity-[0.6]" />
+          <div className="relative">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
